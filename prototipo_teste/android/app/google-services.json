@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "626985451387",
+    "project_id": "projeto-registro-ponto-senai",
+    "storage_bucket": "projeto-registro-ponto-senai.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:626985451387:android:5e39443f94bbe77a5ec7de",
+        "android_client_info": {
+          "package_name": "br.com.ryaan.prototipo_teste"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCqxoeF6Cy99gQYcHrnyEGc6OkugVZfLL8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:626985451387:android:c280ee3037b0291f5ec7de",
+        "android_client_info": {
+          "package_name": "br.ryan"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCqxoeF6Cy99gQYcHrnyEGc6OkugVZfLL8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
