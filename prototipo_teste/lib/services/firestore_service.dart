@@ -52,11 +52,13 @@ class FirestoreService {
       throw e;
     }
   }
+
   // Verifica a senha inserida com a hash armazenada
   Future<bool> verificarSenhaFuncionario(String nif, String senha) async {
     try {
       // Busca o funcionário no Firestore
-      DocumentSnapshot docSnapshot = await _firestore.collection('funcionarios').doc(nif).get();
+      DocumentSnapshot docSnapshot =
+          await _firestore.collection('funcionarios').doc(nif).get();
 
       if (docSnapshot.exists) {
         var funcionarioData = docSnapshot.data() as Map<String, dynamic>;
@@ -76,7 +78,6 @@ class FirestoreService {
       throw e;
     }
   }
-
 
   // Realiza o login verificando a senha
   Future<bool> login(String nif, String senha) async {

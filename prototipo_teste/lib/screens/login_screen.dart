@@ -74,8 +74,17 @@ class _LoginScreenState extends State<LoginScreen> {
                       await _firestoreService.buscarFuncionarioPorNIF(nif);
 
                   if (funcionarioData != null) {
+                    if(funcionarioData.isAdmin == true && funcionarioData.senha == senha){
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => CadastroFuncionariosScreen(),
+                          ),
+                        );
+                    }
                     bool senhaCorreta = await _firestoreService
                         .verificarSenhaFuncionario(nif, senha);
+                        print(senhaCorreta);
                     if (senhaCorreta) {
                       if (funcionarioData.isAdmin == true) {
                         Navigator.push(
