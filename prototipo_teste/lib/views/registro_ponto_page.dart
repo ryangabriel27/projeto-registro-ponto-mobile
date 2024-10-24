@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:prototipo_teste/services/firestore_service.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class RegistroPontoPage extends StatefulWidget {
   final String tipo;
+  final String nif;
 
-  RegistroPontoPage({required this.tipo});
+  RegistroPontoPage({required this.tipo, required this.nif});
 
   @override
   _RegistroPontoPageState createState() => _RegistroPontoPageState();
@@ -14,8 +15,7 @@ class RegistroPontoPage extends StatefulWidget {
 class _RegistroPontoPageState extends State<RegistroPontoPage> {
   late Position _currentPosition;
   bool _isLoading = true;
-  final FirestoreService _firestoreService =
-      FirestoreService(); // Instância do serviço Firestore
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   @override
   void initState() {
@@ -50,7 +50,8 @@ class _RegistroPontoPageState extends State<RegistroPontoPage> {
       setState(() {
         _isLoading = false;
       });
-      return Future.error('Location permissions are permanently denied.');
+      return Future.error(
+          'Location permissions are permanently denied, we cannot request permissions.');
     }
 
     _currentPosition = await Geolocator.getCurrentPosition();
@@ -61,15 +62,16 @@ class _RegistroPontoPageState extends State<RegistroPontoPage> {
 
   Future<void> _registrarPonto() async {
     try {
-      await _firestoreService.registrarPonto(
-        tipo: widget.tipo,
-        latitude: _currentPosition.latitude,
-        longitude: _currentPosition.longitude,
-      );
+      await _firestore.collection('registros_ponto').add({
+        'nif': widget.nif,
+        'tipo': widget.tipo,
+        'latitude': _currentPosition.latitude,
+        'longitude': _currentPosition.longitude,
+        'timestamp': FieldValue.serverTimestamp(),
+      });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Ponto registrado com sucesso!')),
       );
-      Navigator.pop(context); // Volta para a tela anterior após registrar
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Erro ao registrar ponto: $e')),
@@ -92,8 +94,7 @@ class _RegistroPontoPageState extends State<RegistroPontoPage> {
                   Text('Latitude: ${_currentPosition.latitude}'),
                   Text('Longitude: ${_currentPosition.longitude}'),
                   ElevatedButton(
-                    onPressed:
-                        _registrarPonto, // Chama a função de registrar ponto
+                    onPressed: _registrarPonto,
                     child: Text('Confirmar Registro de Ponto'),
                   ),
                 ],

@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'registro_ponto_page.dart';
 
 class DashboardPage extends StatelessWidget {
+  final String nif;
+
+  DashboardPage({required this.nif});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -17,7 +21,9 @@ class DashboardPage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => RegistroPontoPage(tipo: 'entrada')),
+                    builder: (context) =>
+                        RegistroPontoPage(tipo: 'entrada', nif: nif),
+                  ),
                 );
               },
               child: Text('Bater Ponto de Entrada'),
@@ -28,7 +34,9 @@ class DashboardPage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => RegistroPontoPage(tipo: 'saida')),
+                    builder: (context) =>
+                        RegistroPontoPage(tipo: 'saida', nif: nif),
+                  ),
                 );
               },
               child: Text('Bater Ponto de Saída'),
