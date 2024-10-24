@@ -5,6 +5,8 @@ import 'package:prototipo_teste/services/firestore_service.dart';
 import 'package:prototipo_teste/screens/cadastro_senha_screen.dart';
 import 'package:prototipo_teste/screens/dashboard_screen.dart';
 
+import '../views/dashboard_page.dart';
+
 class LoginScreen extends StatefulWidget {
   @override
   _LoginScreenState createState() => _LoginScreenState();
