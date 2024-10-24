@@ -15,7 +15,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _senhaController = TextEditingController();
   final FirestoreService _firestoreService = FirestoreService();
 
-  bool _senhaFieldVisible = false; // Para controlar a exibição do campo de senha
+  bool _senhaFieldVisible =
+      false; // Para controlar a exibição do campo de senha
 
   @override
   Widget build(BuildContext context) {
@@ -70,20 +71,28 @@ class _LoginScreenState extends State<LoginScreen> {
                   Funcionario? funcionarioData =
                       await _firestoreService.buscarFuncionarioPorNIF(nif);
 
-                  if (funcionarioData != null && funcionarioData.senha == senha) {
-                    if (funcionarioData.isAdmin == true) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => CadastroFuncionariosScreen(),
-                        ),
-                      );
+                  if (funcionarioData != null) {
+                    bool senhaCorreta = await _firestoreService
+                        .verificarSenhaFuncionario(nif, senha);
+                    if (senhaCorreta) {
+                      if (funcionarioData.isAdmin == true) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => CadastroFuncionariosScreen(),
+                          ),
+                        );
+                      } else {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => PaginaInternaFuncionario(),
+                          ),
+                        );
+                      }
                     } else {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => PaginaInternaFuncionario(),
-                        ),
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Senha incorreta')),
                       );
                     }
                   } else {

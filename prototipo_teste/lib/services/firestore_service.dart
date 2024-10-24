@@ -1,3 +1,4 @@
+import 'package:bcrypt/bcrypt.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:prototipo_teste/models/Funcionario.dart';
 
@@ -32,15 +33,43 @@ class FirestoreService {
     }
   }
 
-  // Atualiza a senha do funcionário
+  // Atualiza a senha do funcionário com hash
   Future<void> atualizarSenhaFuncionario(String nif, String senha) async {
     try {
+      // Gera o hash da senha usando bcrypt
+      String hashedSenha = BCrypt.hashpw(senha, BCrypt.gensalt());
+
       await _firestore.collection('funcionarios').doc(nif).update({
-        'senha': senha,
+        'senha': hashedSenha,
       });
       print("Senha atualizada com sucesso");
     } catch (e) {
       print("Erro ao atualizar senha: $e");
+      throw e;
+    }
+  }
+
+  // Verifica a senha inserida com a hash armazenada
+  Future<bool> verificarSenhaFuncionario(String nif, String senha) async {
+    try {
+      // Busca o funcionário no Firestore
+      DocumentSnapshot docSnapshot = await _firestore.collection('funcionarios').doc(nif).get();
+
+      if (docSnapshot.exists) {
+        var funcionarioData = docSnapshot.data() as Map<String, dynamic>;
+
+        // Verifica a senha fornecida comparando com o hash
+        String hashedSenha = funcionarioData['senha'];
+
+        // Verifica se a senha fornecida corresponde ao hash
+        bool isSenhaCorreta = BCrypt.checkpw(senha, hashedSenha);
+
+        return isSenhaCorreta;
+      } else {
+        throw Exception("Funcionário não encontrado");
+      }
+    } catch (e) {
+      print("Erro ao verificar senha: $e");
       throw e;
     }
   }
