@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:prototipo_teste/screens/login_screen.dart';
 import 'package:prototipo_teste/screens/home_screen.dart';
 
 void main() async {
@@ -16,7 +17,11 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: HomeScreen(), // Definindo a tela inicial
+      initialRoute: '/',
+      routes: {
+        '/': (context) => LoginScreen(),
+        '/home': (context) => HomeScreen(),
+      },
     );
   }
 }

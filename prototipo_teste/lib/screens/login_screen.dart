@@ -5,6 +5,8 @@ import 'package:prototipo_teste/services/firestore_service.dart';
 import 'package:prototipo_teste/screens/cadastro_senha_screen.dart';
 import 'package:prototipo_teste/screens/dashboard_screen.dart';
 
+import '../views/dashboard_page.dart';
+
 class LoginScreen extends StatefulWidget {
   @override
   _LoginScreenState createState() => _LoginScreenState();
@@ -15,7 +17,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _senhaController = TextEditingController();
   final FirestoreService _firestoreService = FirestoreService();
 
-  bool _senhaFieldVisible = false; // Para controlar a exibição do campo de senha
+  bool _senhaFieldVisible =
+      false; // Para controlar a exibição do campo de senha
 
   @override
   Widget build(BuildContext context) {
@@ -70,22 +73,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   Funcionario? funcionarioData =
                       await _firestoreService.buscarFuncionarioPorNIF(nif);
 
-                  if (funcionarioData != null && funcionarioData.senha == senha) {
-                    if (funcionarioData.isAdmin == true) {
-                      Navigator.push(
+                  if (funcionarioData != null &&
+                      funcionarioData.senha == senha) {
+                    Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => CadastroFuncionariosScreen(),
-                        ),
-                      );
-                    } else {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => PaginaInternaFuncionario(),
-                        ),
-                      );
-                    }
+                          builder: (_) => DashboardPage(),
+                        ));
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text('Senha incorreta')),
