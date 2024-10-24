@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:prototipo_teste/services/firestore_service.dart';
 
 class RegistroPontoPage extends StatefulWidget {
   final String tipo;
+
   RegistroPontoPage({required this.tipo});
 
   @override
@@ -12,10 +12,10 @@ class RegistroPontoPage extends StatefulWidget {
 }
 
 class _RegistroPontoPageState extends State<RegistroPontoPage> {
-  late GoogleMapController mapController;
-  late Position currentPosition;
-  final LatLng officeLocation =
-      LatLng(-23.55052, -46.633308); // Exemplo de coordenadas do escritório
+  late Position _currentPosition;
+  bool _isLoading = true;
+  final FirestoreService _firestoreService =
+      FirestoreService(); // Instância do serviço Firestore
 
   @override
   void initState() {
@@ -23,38 +23,57 @@ class _RegistroPontoPageState extends State<RegistroPontoPage> {
     _getCurrentLocation();
   }
 
-  void _getCurrentLocation() async {
-    currentPosition = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
-    setState(() {});
-  }
+  Future<void> _getCurrentLocation() async {
+    bool serviceEnabled;
+    LocationPermission permission;
 
-  void _onMapCreated(GoogleMapController controller) {
-    mapController = controller;
-  }
-
-  void _confirmLocation() async {
-    double distanceInMeters = Geolocator.distanceBetween(
-      currentPosition.latitude,
-      currentPosition.longitude,
-      officeLocation.latitude,
-      officeLocation.longitude,
-    );
-
-    if (distanceInMeters <= 100) {
-      await FirebaseFirestore.instance.collection('registros_ponto').add({
-        'tipo': widget.tipo,
-        'latitude': currentPosition.latitude,
-        'longitude': currentPosition.longitude,
-        'timestamp': Timestamp.now(),
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      setState(() {
+        _isLoading = false;
       });
+      return Future.error('Location services are disabled.');
+    }
 
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content:
-              Text('Localização validada. Ponto registrado com sucesso!')));
-    } else {
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        setState(() {
+          _isLoading = false;
+        });
+        return Future.error('Location permissions are denied');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      setState(() {
+        _isLoading = false;
+      });
+      return Future.error('Location permissions are permanently denied.');
+    }
+
+    _currentPosition = await Geolocator.getCurrentPosition();
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
+  Future<void> _registrarPonto() async {
+    try {
+      await _firestoreService.registrarPonto(
+        tipo: widget.tipo,
+        latitude: _currentPosition.latitude,
+        longitude: _currentPosition.longitude,
+      );
       ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Você está fora do alcance permitido.')));
+        SnackBar(content: Text('Ponto registrado com sucesso!')),
+      );
+      Navigator.pop(context); // Volta para a tela anterior após registrar
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erro ao registrar ponto: $e')),
+      );
     }
   }
 
@@ -62,35 +81,23 @@ class _RegistroPontoPageState extends State<RegistroPontoPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Confirmação de Localização'),
+        title: Text('Registro de Ponto - ${widget.tipo}'),
       ),
-      body: currentPosition == null
+      body: _isLoading
           ? Center(child: CircularProgressIndicator())
-          : Column(
-              children: <Widget>[
-                Expanded(
-                  child: GoogleMap(
-                    onMapCreated: _onMapCreated,
-                    initialCameraPosition: CameraPosition(
-                      target: LatLng(
-                          currentPosition.latitude, currentPosition.longitude),
-                      zoom: 15,
-                    ),
-                    markers: {
-                      Marker(
-                        markerId: MarkerId('currentLocation'),
-                        position: LatLng(currentPosition.latitude,
-                            currentPosition.longitude),
-                        infoWindow: InfoWindow(title: 'Você está aqui!'),
-                      ),
-                    },
+          : Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text('Latitude: ${_currentPosition.latitude}'),
+                  Text('Longitude: ${_currentPosition.longitude}'),
+                  ElevatedButton(
+                    onPressed:
+                        _registrarPonto, // Chama a função de registrar ponto
+                    child: Text('Confirmar Registro de Ponto'),
                   ),
-                ),
-                ElevatedButton(
-                  onPressed: _confirmLocation,
-                  child: Text('Confirmar Localização'),
-                ),
-              ],
+                ],
+              ),
             ),
     );
   }

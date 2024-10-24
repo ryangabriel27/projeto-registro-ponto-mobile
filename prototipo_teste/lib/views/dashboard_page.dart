@@ -1,19 +1,7 @@
 import 'package:flutter/material.dart';
 import 'registro_ponto_page.dart';
 
-void main() => runApp(MyApp());
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Controle de Ponto',
-      home: HomePage(),
-    );
-  }
-}
-
-class HomePage extends StatelessWidget {
+class DashboardPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
