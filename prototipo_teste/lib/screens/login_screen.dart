@@ -13,7 +13,8 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _nifController = TextEditingController();
   final TextEditingController _senhaController = TextEditingController();
-  final FirestoreService _firestoreService = FirestoreService(); // Instância do FirestoreService
+  final FirestoreService _firestoreService =
+      FirestoreService(); // Instância do FirestoreService
 
   @override
   Widget build(BuildContext context) {
@@ -39,30 +40,43 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 try {
                   // Busca o funcionário no Firestore
-                  Funcionario? funcionarioData = await _firestoreService.buscarFuncionarioPorNIF(nif);
-                  
+                  Funcionario? funcionarioData =
+                      await _firestoreService.buscarFuncionarioPorNIF(nif);
                   if (funcionarioData != null) {
-                    if (funcionarioData.senha == null || funcionarioData.senha!.isEmpty) {
+                    print(funcionarioData.senha);
+                    if (funcionarioData.senha == null) {
                       // Se a senha não estiver cadastrada, redireciona para a tela de registro de senha
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => CadastroSenhaScreen(nif: nif)));
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => CadastroSenhaScreen(nif: nif)));
                     } else if (funcionarioData.senha == senha) {
                       // Se o login for bem-sucedido
                       if (funcionarioData.isAdmin == true) {
                         // Redireciona para a página de ADM
-                        Navigator.push(context, MaterialPageRoute(builder: (_) => CadastroFuncionariosScreen()));
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => CadastroFuncionariosScreen()));
                       } else {
                         // Redireciona para a página interna do funcionário
-                        Navigator.push(context, MaterialPageRoute(builder: (_) => PaginaInternaFuncionario()));
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => PaginaInternaFuncionario()));
                       }
                     } else {
                       // Senha incorreta
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Senha incorreta')));
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Senha incorreta')));
                     }
                   } else {
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Funcionário não encontrado')));
+                    ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Funcionário não encontrado')));
                   }
                 } catch (e) {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erro ao realizar login: $e')));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Erro ao realizar login: $e')));
                 }
               },
               child: Text('Login'),

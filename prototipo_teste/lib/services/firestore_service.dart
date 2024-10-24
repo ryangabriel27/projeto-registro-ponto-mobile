@@ -16,16 +16,19 @@ class FirestoreService {
   }
 
   // Verifica se o funcionário existe e retorna suas informações
+  // Método para buscar um funcionário por NIF
   Future<Funcionario?> buscarFuncionarioPorNIF(String nif) async {
     try {
-      DocumentSnapshot funcionarioSnapshot = await _firestore.collection('funcionarios').doc(nif).get();
-      if (funcionarioSnapshot.exists) {
-        return Funcionario.fromMap(funcionarioSnapshot.data() as Map<String, dynamic>);
+      DocumentSnapshot doc = await _firestore.collection('funcionarios').doc(nif).get();
+      if (doc.exists) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        return Funcionario.fromMap(data); // Usa o fromMap para converter
+      } else {
+        return null; // Funcionário não encontrado
       }
-      return null;
     } catch (e) {
-      print("Erro ao buscar funcionário: $e");
-      throw e;
+      print('Erro ao buscar funcionário: $e');
+      return null;
     }
   }
 
