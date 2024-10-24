@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 
 class RegistroPontoPage extends StatefulWidget {
   final String tipo;
@@ -96,8 +98,9 @@ class _RegistroPontoPageState extends State<RegistroPontoPage> {
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-            content: Text(
-                'Você está fora do alcance permitido para bater o ponto.')),
+          content:
+              Text('Você está fora do alcance permitido para bater o ponto.'),
+        ),
       );
     }
   }
@@ -110,18 +113,58 @@ class _RegistroPontoPageState extends State<RegistroPontoPage> {
       ),
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
-          : Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Text('Latitude: ${_currentPosition.latitude}'),
-                  Text('Longitude: ${_currentPosition.longitude}'),
-                  ElevatedButton(
-                    onPressed: _registrarPonto,
-                    child: Text('Confirmar Registro de Ponto'),
+          : Column(
+              children: <Widget>[
+                Container(
+                  height: 300,
+                  child: FlutterMap(
+                    options: MapOptions(
+                      center: LatLng(_currentPosition.latitude,
+                          _currentPosition.longitude),
+                      zoom: 15.0,
+                    ),
+                    children: [
+                      TileLayer(
+                        urlTemplate:
+                            'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                        subdomains: ['a', 'b', 'c'],
+                      ),
+                      MarkerLayer(
+                        markers: [
+                          Marker(
+                            point: LatLng(_currentPosition.latitude,
+                                _currentPosition.longitude),
+                            builder: (ctx) => Container(
+                              child: Icon(Icons.location_on,
+                                  color: Colors.red, size: 40),
+                            ),
+                          ),
+                          Marker(
+                            point: LatLng(specificLatitude, specificLongitude),
+                            builder: (ctx) => Container(
+                              child: Icon(Icons.location_on,
+                                  color: Colors.green, size: 40),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+                Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text('Latitude: ${_currentPosition.latitude}'),
+                      Text('Longitude: ${_currentPosition.longitude}'),
+                      ElevatedButton(
+                        onPressed: _registrarPonto,
+                        child: Text('Confirmar Registro de Ponto'),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
     );
   }
