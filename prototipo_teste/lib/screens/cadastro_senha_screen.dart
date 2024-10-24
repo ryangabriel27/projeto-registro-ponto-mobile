@@ -38,7 +38,7 @@ class _CadastroSenhaScreenState extends State<CadastroSenhaScreen> {
 
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Senha cadastrada com sucesso')));
 
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => PaginaInternaFuncionario()));
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => PaginaInternaFuncionario()));
                 } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erro ao cadastrar senha: $e')));
                 }
