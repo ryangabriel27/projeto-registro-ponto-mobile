@@ -17,6 +17,12 @@ class _RegistroPontoPageState extends State<RegistroPontoPage> {
   bool _isLoading = true;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  // Defina as coordenadas do local específico
+  final double specificLatitude =
+      -22.558186; // Exemplo: Latitude do local específico
+  final double specificLongitude =
+      -47.413454; // Exemplo: Longitude do local específico
+
   @override
   void initState() {
     super.initState();
@@ -61,20 +67,37 @@ class _RegistroPontoPageState extends State<RegistroPontoPage> {
   }
 
   Future<void> _registrarPonto() async {
-    try {
-      await _firestore.collection('registros_ponto').add({
-        'nif': widget.nif,
-        'tipo': widget.tipo,
-        'latitude': _currentPosition.latitude,
-        'longitude': _currentPosition.longitude,
-        'timestamp': FieldValue.serverTimestamp(),
-      });
+    // Calcular a distância entre a localização atual e o local específico
+    double distanceInMeters = Geolocator.distanceBetween(
+      _currentPosition.latitude,
+      _currentPosition.longitude,
+      specificLatitude,
+      specificLongitude,
+    );
+
+    // Verificar se a distância é menor que 100 metros
+    if (distanceInMeters <= 100) {
+      try {
+        await _firestore.collection('registros_ponto').add({
+          'nif': widget.nif,
+          'tipo': widget.tipo,
+          'latitude': _currentPosition.latitude,
+          'longitude': _currentPosition.longitude,
+          'timestamp': FieldValue.serverTimestamp(),
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Ponto registrado com sucesso!')),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erro ao registrar ponto: $e')),
+        );
+      }
+    } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Ponto registrado com sucesso!')),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erro ao registrar ponto: $e')),
+        SnackBar(
+            content: Text(
+                'Você está fora do alcance permitido para bater o ponto.')),
       );
     }
   }
