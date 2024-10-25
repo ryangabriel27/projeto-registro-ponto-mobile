@@ -21,9 +21,9 @@ class _RegistroPontoPageState extends State<RegistroPontoPage> {
 
   // Defina as coordenadas do local específico
   final double specificLatitude =
-      -22.558186; // Exemplo: Latitude do local específico
+      -22.5708699; // Exemplo: Latitude do local específico
   final double specificLongitude =
-      -47.413454; // Exemplo: Longitude do local específico
+      -47.403842; // Exemplo: Longitude do local específico
 
   @override
   void initState() {
