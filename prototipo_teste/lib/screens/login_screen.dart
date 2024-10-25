@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:prototipo_teste/models/Funcionario.dart';
 import 'package:prototipo_teste/screens/cadastro_screen.dart';
+import 'package:prototipo_teste/screens/home_screen.dart';
 import 'package:prototipo_teste/services/firestore_service.dart';
 import 'package:prototipo_teste/screens/cadastro_senha_screen.dart';
 import 'package:prototipo_teste/screens/dashboard_screen.dart';
@@ -75,7 +76,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   if (funcionarioData != null) {
                     if (funcionarioData.isAdmin == true &&
                         funcionarioData.senha == senha) {
-                      Navigator.push(
+                      Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
                           builder: (_) => CadastroFuncionariosScreen(),
@@ -87,7 +88,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       print(senhaCorreta);
                       if (senhaCorreta) {
                         if (funcionarioData.isAdmin == true) {
-                          Navigator.push(
+                          Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
                               builder: (_) => CadastroFuncionariosScreen(),
@@ -118,6 +119,12 @@ class _LoginScreenState extends State<LoginScreen> {
               },
               child: Text(_senhaFieldVisible ? 'Login' : 'Continuar'),
             ),
+            ElevatedButton(
+                onPressed: () {
+                  Navigator.pushReplacement(
+                      context, MaterialPageRoute(builder: (_) => HomeScreen()));
+                },
+                child: Text("Voltar ao ínicio")),
           ],
         ),
       ),

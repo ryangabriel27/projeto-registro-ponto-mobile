@@ -4,7 +4,8 @@ import 'package:firebase_storage/firebase_storage.dart'; // Para Cloud Storage
 import 'package:image_picker/image_picker.dart'; // Para selecionar a imagem
 import 'package:firebase_auth/firebase_auth.dart'; // Para autenticação
 import 'package:path/path.dart';
-import 'package:prototipo_teste/screens/dashboard_screen.dart'; // Para manipular nomes de arquivos
+import 'package:prototipo_teste/screens/dashboard_screen.dart';
+import 'package:prototipo_teste/views/dashboard_page.dart'; // Para manipular nomes de arquivos
 
 class UploadFotoScreen extends StatefulWidget {
   final String nif;
@@ -50,11 +51,11 @@ class _UploadFotoScreenState extends State<UploadFotoScreen> {
 
         print('Upload concluído! URL da imagem: $downloadUrl');
         Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                      builder: (_) => PaginaInternaFuncionario(
-                            nif: widget.nif,
-                          )));
+            context,
+            MaterialPageRoute(
+                builder: (_) => PaginaInternaFuncionario(
+                      nif: widget.nif,
+                    )));
       } catch (e) {
         print('Erro ao fazer upload: $e');
         // ScaffoldMessenger.of(context as BuildContext).showSnackBar(
@@ -86,6 +87,15 @@ class _UploadFotoScreenState extends State<UploadFotoScreen> {
               ElevatedButton(
                 onPressed: () {
                   _uploadImage(context);
+                },
+                child: Text('Upload'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => DashboardPage(nif: widget.nif)));
                 },
                 child: Text('Upload'),
               ),

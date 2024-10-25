@@ -1,6 +1,7 @@
 import 'package:bcrypt/bcrypt.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:prototipo_teste/models/Funcionario.dart';
+import 'package:prototipo_teste/models/RegistroPonto.dart';
 
 class FirestoreService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -96,18 +97,14 @@ class FirestoreService {
     }
   }
 
-  Future<void> registrarPonto(
-      {required String tipo,
-      required double latitude,
-      required double longitude,
-      required double distanciaFormatada}) async {
+  Future<void> registrarPonto(RegistroPonto registro) async {
     try {
       // Aqui você deve configurar o que deseja armazenar no Firestore
-      await _firestore.collection('registros_de_ponto').add({
-        'tipo': tipo,
-        'latitude': latitude,
-        'longitude': longitude,
-        'distancia': distanciaFormatada,
+      await _firestore.collection('registros_ponto').add({
+        'tipo': registro.tipo,
+        'latitude': registro.latitude,
+        'longitude': registro.longitude,
+        'distancia': registro.distancia,
         'timestamp': FieldValue.serverTimestamp(), // Adiciona um timestamp
       });
       print("Ponto registrado com sucesso");

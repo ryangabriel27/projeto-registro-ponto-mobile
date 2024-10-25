@@ -3,6 +3,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:prototipo_teste/models/RegistroPonto.dart';
+import 'package:prototipo_teste/services/firestore_service.dart';
 
 class RegistroPontoPage extends StatefulWidget {
   final String tipo;
@@ -17,7 +19,7 @@ class RegistroPontoPage extends StatefulWidget {
 class _RegistroPontoPageState extends State<RegistroPontoPage> {
   late Position _currentPosition;
   bool _isLoading = true;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  FirestoreService _firestore = new FirestoreService();
 
   // Coordenadas do local específico
   final double specificLatitude = -22.5708699;
@@ -84,14 +86,24 @@ class _RegistroPontoPageState extends State<RegistroPontoPage> {
 
     if (distance <= 100) {
       try {
-        await _firestore.collection('registros_ponto').add({
-          'nif': widget.nif,
-          'tipo': widget.tipo,
-          'latitude': _currentPosition.latitude,
-          'longitude': _currentPosition.longitude,
-          'distancia': distanciaFormatada,
-          'timestamp': FieldValue.serverTimestamp(),
-        });
+        // await _firestore.collection('registros_ponto').add({
+        //   'nif': widget.nif,
+        //   'tipo': widget.tipo,
+        //   'latitude': _currentPosition.latitude,
+        //   'longitude': _currentPosition.longitude,
+        //   'distancia': distanciaFormatada,
+        //   'timestamp': FieldValue.serverTimestamp(),
+        // });
+        
+        RegistroPonto newRegistro = new RegistroPonto(
+            nif: widget.nif,
+            tipo: widget.tipo,
+            latitude: _currentPosition.latitude,
+            longitude: _currentPosition.longitude,
+            distancia: distanciaFormatada,
+            nome: "");
+
+        await _firestore.registrarPonto(newRegistro);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Ponto registrado com sucesso!')),
         );
