@@ -73,37 +73,41 @@ class _LoginScreenState extends State<LoginScreen> {
                       await _firestoreService.buscarFuncionarioPorNIF(nif);
 
                   if (funcionarioData != null) {
-                    if(funcionarioData.isAdmin == true && funcionarioData.senha == senha){
+                    if (funcionarioData.isAdmin == true &&
+                        funcionarioData.senha == senha) {
                       Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => CadastroFuncionariosScreen(),
-                          ),
-                        );
-                    }
-                    bool senhaCorreta = await _firestoreService
-                        .verificarSenhaFuncionario(nif, senha);
-                        print(senhaCorreta);
-                    if (senhaCorreta) {
-                      if (funcionarioData.isAdmin == true) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => CadastroFuncionariosScreen(),
-                          ),
-                        );
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => CadastroFuncionariosScreen(),
+                        ),
+                      );
+                    } else {
+                      bool senhaCorreta = await _firestoreService
+                          .verificarSenhaFuncionario(nif, senha);
+                      print(senhaCorreta);
+                      if (senhaCorreta) {
+                        if (funcionarioData.isAdmin == true) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => CadastroFuncionariosScreen(),
+                            ),
+                          );
+                        } else {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => PaginaInternaFuncionario(
+                                nif: nif,
+                              ),
+                            ),
+                          );
+                        }
                       } else {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => PaginaInternaFuncionario(nif: nif,),
-                          ),
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Senha incorreta')),
                         );
                       }
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Senha incorreta')),
-                      );
                     }
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
