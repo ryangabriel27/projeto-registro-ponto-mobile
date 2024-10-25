@@ -76,7 +76,7 @@ class _PaginaInternaFuncionarioState extends State<PaginaInternaFuncionario> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => RegistroPontoPage(tipo: 'entrada')),
+                      builder: (context) => RegistroPontoPage(tipo: 'entrada', nif: widget.nif,)),
                 );
               },
               child: Text('Bater Ponto de Entrada'),
@@ -87,7 +87,7 @@ class _PaginaInternaFuncionarioState extends State<PaginaInternaFuncionario> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => RegistroPontoPage(tipo: 'saida')),
+                      builder: (context) => RegistroPontoPage(tipo: 'saida', nif: widget.nif,)),
                 );
               },
               child: Text('Bater Ponto de Saída'),
