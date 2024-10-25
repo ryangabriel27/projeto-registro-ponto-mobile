@@ -97,7 +97,7 @@ class _UploadFotoScreenState extends State<UploadFotoScreen> {
                       MaterialPageRoute(
                           builder: (_) => DashboardPage(nif: widget.nif)));
                 },
-                child: Text('Upload'),
+                child: Text('Voltar ao login'),
               ),
             ],
           ),
