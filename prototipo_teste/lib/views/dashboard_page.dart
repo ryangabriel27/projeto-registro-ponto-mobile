@@ -22,7 +22,7 @@ class DashboardPage extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                     builder: (context) =>
-                        RegistroPontoPage(tipo: 'entrada', nif: nif),
+                        RegistroPontoPage(tipo: 'Entrada', nif: nif),
                   ),
                 );
               },
@@ -35,7 +35,7 @@ class DashboardPage extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                     builder: (context) =>
-                        RegistroPontoPage(tipo: 'saida', nif: nif),
+                        RegistroPontoPage(tipo: 'Saida', nif: nif),
                   ),
                 );
               },
