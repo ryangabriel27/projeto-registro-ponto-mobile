@@ -80,7 +80,7 @@ class _RegistroPontoPageState extends State<RegistroPontoPage> {
     double distance = Geolocator.distanceBetween(_currentPosition.latitude,
         _currentPosition.longitude, specificLatitude, specificLongitude);
 
-    String distanciaFormatada = distance.toStringAsFixed(2);
+    String distanciaFormatada = distance.toStringAsFixed(2) + "m";
 
     if (distance <= 100) {
       try {
@@ -141,7 +141,7 @@ class _RegistroPontoPageState extends State<RegistroPontoPage> {
                                 _currentPosition.longitude),
                             builder: (ctx) => Container(
                               child: Icon(Icons.location_history,
-                                  color: Colors.deepPurpleAccent, size: 80),
+                                  color: Colors.deepPurpleAccent, size: 50),
                             ),
                           ),
                           Marker(
