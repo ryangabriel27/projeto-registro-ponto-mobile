@@ -126,12 +126,11 @@ class _PaginaInternaFuncionarioState extends State<PaginaInternaFuncionario> {
                   context,
                   MaterialPageRoute(
                       builder: (context) =>
-                          RegistroPontoPage(tipo: 'entrada', nif: widget.nif)),
+                          RegistroPontoPage(tipo: 'Entrada', nif: widget.nif)),
                 );
               },
               style: ButtonStyle(
-                padding: MaterialStateProperty.all(
-                    EdgeInsets.all(25.0)),
+                padding: MaterialStateProperty.all(EdgeInsets.all(25.0)),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize
@@ -150,18 +149,18 @@ class _PaginaInternaFuncionarioState extends State<PaginaInternaFuncionario> {
                   context,
                   MaterialPageRoute(
                       builder: (context) =>
-                          RegistroPontoPage(tipo: 'saida', nif: widget.nif)),
+                          RegistroPontoPage(tipo: 'Saida', nif: widget.nif)),
                 );
               },
               style: ButtonStyle(
-                padding: MaterialStateProperty.all(
-                    EdgeInsets.all(25.0)),
+                padding: MaterialStateProperty.all(EdgeInsets.all(25.0)),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize
                     .min, // Para evitar que o botão seja muito largo
                 children: [
-                  Icon(Icons.keyboard_return), // Substitua pelo ícone que deseja
+                  Icon(
+                      Icons.keyboard_return), // Substitua pelo ícone que deseja
                   SizedBox(width: 3), // Espaçamento entre o ícone e o texto
                   Text('Bater Ponto de Saída'),
                 ],
