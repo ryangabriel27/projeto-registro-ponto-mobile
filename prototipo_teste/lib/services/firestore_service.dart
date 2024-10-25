@@ -99,13 +99,15 @@ class FirestoreService {
   Future<void> registrarPonto(
       {required String tipo,
       required double latitude,
-      required double longitude}) async {
+      required double longitude,
+      required double distanciaFormatada}) async {
     try {
       // Aqui você deve configurar o que deseja armazenar no Firestore
       await _firestore.collection('registros_de_ponto').add({
         'tipo': tipo,
         'latitude': latitude,
         'longitude': longitude,
+        'distancia': distanciaFormatada,
         'timestamp': FieldValue.serverTimestamp(), // Adiciona um timestamp
       });
       print("Ponto registrado com sucesso");

@@ -19,11 +19,19 @@ class _RegistroPontoPageState extends State<RegistroPontoPage> {
   bool _isLoading = true;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  // Defina as coordenadas do local específico
-  final double specificLatitude =
-      -22.558186; // Exemplo: Latitude do local específico
-  final double specificLongitude =
-      -47.413454; // Exemplo: Longitude do local específico
+  // Coordenadas do local específico
+  final double specificLatitude = -22.5708699;
+  final double specificLongitude = -47.403842;
+
+  String get formattedDistance {
+    double distance = Geolocator.distanceBetween(
+      _currentPosition.latitude,
+      _currentPosition.longitude,
+      specificLatitude,
+      specificLongitude,
+    );
+    return distance.toStringAsFixed(2);
+  }
 
   @override
   void initState() {
@@ -69,22 +77,19 @@ class _RegistroPontoPageState extends State<RegistroPontoPage> {
   }
 
   Future<void> _registrarPonto() async {
-    // Calcular a distância entre a localização atual e o local específico
-    double distanceInMeters = Geolocator.distanceBetween(
-      _currentPosition.latitude,
-      _currentPosition.longitude,
-      specificLatitude,
-      specificLongitude,
-    );
+    double distance = Geolocator.distanceBetween(_currentPosition.latitude,
+        _currentPosition.longitude, specificLatitude, specificLongitude);
 
-    // Verificar se a distância é menor que 100 metros
-    if (distanceInMeters <= 100) {
+    String distanciaFormatada = distance.toStringAsFixed(2) + "m";
+
+    if (distance <= 100) {
       try {
         await _firestore.collection('registros_ponto').add({
           'nif': widget.nif,
           'tipo': widget.tipo,
           'latitude': _currentPosition.latitude,
           'longitude': _currentPosition.longitude,
+          'distancia': distanciaFormatada,
           'timestamp': FieldValue.serverTimestamp(),
         });
         ScaffoldMessenger.of(context).showSnackBar(
@@ -135,15 +140,16 @@ class _RegistroPontoPageState extends State<RegistroPontoPage> {
                             point: LatLng(_currentPosition.latitude,
                                 _currentPosition.longitude),
                             builder: (ctx) => Container(
-                              child: Icon(Icons.location_on,
-                                  color: Colors.red, size: 40),
+                              child: Icon(Icons.location_history,
+                                  color: Colors.deepPurpleAccent, size: 50),
                             ),
                           ),
                           Marker(
                             point: LatLng(specificLatitude, specificLongitude),
                             builder: (ctx) => Container(
                               child: Icon(Icons.location_on,
-                                  color: Colors.green, size: 40),
+                                  color: const Color.fromARGB(255, 56, 32, 99),
+                                  size: 40),
                             ),
                           ),
                         ],
@@ -155,8 +161,12 @@ class _RegistroPontoPageState extends State<RegistroPontoPage> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      Text('Latitude: ${_currentPosition.latitude}'),
-                      Text('Longitude: ${_currentPosition.longitude}'),
+                      Text(
+                        'Distância da empresa: ${formattedDistance}m',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                       ElevatedButton(
                         onPressed: _registrarPonto,
                         child: Text('Confirmar Registro de Ponto'),
