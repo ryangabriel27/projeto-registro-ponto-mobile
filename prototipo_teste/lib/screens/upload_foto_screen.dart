@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart'; // Para Cloud Storage
 import 'package:image_picker/image_picker.dart'; // Para selecionar a imagem
 import 'package:firebase_auth/firebase_auth.dart'; // Para autenticação
-import 'package:path/path.dart'; // Para manipular nomes de arquivos
+import 'package:path/path.dart';
+import 'package:prototipo_teste/screens/dashboard_screen.dart'; // Para manipular nomes de arquivos
 
 class UploadFotoScreen extends StatefulWidget {
   final String nif;
@@ -30,7 +31,7 @@ class _UploadFotoScreenState extends State<UploadFotoScreen> {
   }
 
   // Função para fazer o upload da imagem
-  Future<void> _uploadImage() async {
+  Future<void> _uploadImage(BuildContext context) async {
     if (_image != null) {
       try {
         // Referência para o Firebase Storage
@@ -48,9 +49,12 @@ class _UploadFotoScreenState extends State<UploadFotoScreen> {
         String downloadUrl = await taskSnapshot.ref.getDownloadURL();
 
         print('Upload concluído! URL da imagem: $downloadUrl');
-
-        // Aqui você pode salvar a URL no Firestore, associada ao usuário
-        // ...
+        Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => PaginaInternaFuncionario(
+                            nif: widget.nif,
+                          )));
       } catch (e) {
         print('Erro ao fazer upload: $e');
         // ScaffoldMessenger.of(context as BuildContext).showSnackBar(
@@ -78,7 +82,9 @@ class _UploadFotoScreenState extends State<UploadFotoScreen> {
             child: Text('Selecionar Imagem'),
           ),
           ElevatedButton(
-            onPressed: _uploadImage,
+            onPressed: () {
+              _uploadImage(context);
+            },
             child: Text('Upload'),
           ),
         ],
