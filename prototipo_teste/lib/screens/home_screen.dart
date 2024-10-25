@@ -30,16 +30,6 @@ class HomeScreen extends StatelessWidget {
               child: Text('Login'),
             ),
             SizedBox(height: 10),
-            // ElevatedButton(
-            //   onPressed: () {
-            //     // Navega para a tela de cadastro de funcionários (para ADM)
-            //     Navigator.push(
-            //       context,
-            //       MaterialPageRoute(builder: (context) => CadastroFuncionariosScreen()),
-            //     );
-            //   },
-            //   child: Text('Cadastro de Funcionário (ADM)'),
-            // ),
           ],
         ),
       ),
