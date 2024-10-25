@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_storage/firebase_storage.dart'; // Para buscar a imagem
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:prototipo_teste/models/Funcionario.dart';
+import 'package:prototipo_teste/screens/home_screen.dart';
 import 'package:prototipo_teste/screens/upload_foto_screen.dart';
 import 'package:prototipo_teste/services/firestore_service.dart';
 import 'package:prototipo_teste/views/registro_ponto_page.dart';
 
 class PaginaInternaFuncionario extends StatefulWidget {
-  final String nif; // Adiciona o NIF para buscar a foto de perfil
+  final String nif;
 
   PaginaInternaFuncionario({required this.nif});
 
@@ -16,9 +17,9 @@ class PaginaInternaFuncionario extends StatefulWidget {
 }
 
 class _PaginaInternaFuncionarioState extends State<PaginaInternaFuncionario> {
-  String? _fotoPerfilUrl; // Para armazenar a URL da foto de perfil
+  String? _fotoPerfilUrl;
   String? nomeUsuario;
-  FirestoreService _firestoreService = new FirestoreService();
+  FirestoreService _firestoreService = FirestoreService();
 
   @override
   void initState() {
@@ -39,7 +40,7 @@ class _PaginaInternaFuncionarioState extends State<PaginaInternaFuncionario> {
       return await storage.ref(caminhoArquivo).getDownloadURL();
     } catch (e) {
       print('Erro ao carregar a foto de perfil: $e');
-      return null; // Retorna null se houver um erro
+      return null;
     }
   }
 
@@ -58,113 +59,144 @@ class _PaginaInternaFuncionarioState extends State<PaginaInternaFuncionario> {
       ),
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            FutureBuilder<String?>(
-                future: carregaNomeUsuario(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    // Mostra um ícone de carregamento enquanto o nome é carregado
-                    return Text('Carregando...');
-                  } else if (snapshot.hasError) {
-                    // Se houver um erro, exibe o erro
-                    return Text('Erro ao carregar o nome: ${snapshot.error}');
-                  } else {
-                    // Exibe o nome do funcionário
-                    return Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Center(
-                        child: Text(
-                          'Olá, ' + nomeUsuario!,
-                          style: TextStyle(
-                              fontSize: 40.0, fontWeight: FontWeight.bold),
+            // Primeira parte: Saudação, Foto de Perfil e Botão de Carregar Imagem
+            Column(
+              children: [
+                FutureBuilder<String?>(
+                  future: carregaNomeUsuario(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Text('Carregando...');
+                    } else if (snapshot.hasError) {
+                      return Text('Erro ao carregar o nome: ${snapshot.error}');
+                    } else {
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Center(
+                          child: Text(
+                            'Olá, ${nomeUsuario ?? ''}',
+                            style: TextStyle(
+                              fontSize: 30.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      );
+                    }
+                  },
+                ),
+                FutureBuilder<String?>(
+                  future: _carregarFotoPerfil(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return CircleAvatar(
+                        radius: 50,
+                        child: CircularProgressIndicator(),
+                      );
+                    } else if (snapshot.hasError ||
+                        !snapshot.hasData ||
+                        snapshot.data == null) {
+                      return CircleAvatar(
+                        radius: 80,
+                        child: Icon(Icons.person),
+                      );
+                    } else {
+                      return CircleAvatar(
+                        radius: 80,
+                        backgroundImage: NetworkImage(snapshot.data!),
+                      );
+                    }
+                  },
+                ),
+                SizedBox(height: 10),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              UploadFotoScreen(nif: widget.nif)),
+                    );
+                  },
+                  child: Text('Colocar foto de perfil'),
+                ),
+              ],
+            ),
+
+            SizedBox(height: 40),
+
+            // Segunda parte: Botões de "Ponto de Entrada" e "Ponto de Saída"
+            Column(
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => RegistroPontoPage(
+                          tipo: 'Entrada',
+                          nif: widget.nif,
                         ),
                       ),
                     );
-                  }
-                }),
-            FutureBuilder<String?>(
-              future: _carregarFotoPerfil(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  // Mostra um ícone de carregamento enquanto a imagem é carregada
-                  return CircleAvatar(
-                    radius: 50,
-                    child: CircularProgressIndicator(),
-                  );
-                } else if (snapshot.hasError ||
-                    !snapshot.hasData ||
-                    snapshot.data == null) {
-                  // Se houver erro, ou não houver dados, exibe um ícone padrão
-                  return CircleAvatar(
-                    radius: 80,
-                    child: Icon(Icons.person),
-                  );
-                } else {
-                  // Exibe a imagem de perfil carregada
-                  return CircleAvatar(
-                    radius: 80,
-                    backgroundImage: NetworkImage(snapshot.data!),
-                  );
-                }
-              },
+                  },
+                  style: ButtonStyle(
+                    padding: MaterialStateProperty.all(EdgeInsets.all(25.0)),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.schedule),
+                      SizedBox(width: 3),
+                      Text('Bater Ponto de Entrada'),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => RegistroPontoPage(
+                          tipo: 'Saida',
+                          nif: widget.nif,
+                        ),
+                      ),
+                    );
+                  },
+                  style: ButtonStyle(
+                    padding: MaterialStateProperty.all(EdgeInsets.all(25.0)),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.keyboard_return),
+                      SizedBox(width: 3),
+                      Text('Bater Ponto de Saída'),
+                    ],
+                  ),
+                ),
+              ],
             ),
-            SizedBox(height: 20),
+
+            SizedBox(height: 40),
+
+            // Terceira parte: Novo botão adicional
             ElevatedButton(
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => UploadFotoScreen(nif: widget.nif)),
-                );
-              },
-              child: Text('Colocar foto de perfil'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          RegistroPontoPage(tipo: 'Entrada', nif: widget.nif)),
-                );
+                Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => HomeScreen(),
+                    ));
               },
               style: ButtonStyle(
-                padding: MaterialStateProperty.all(EdgeInsets.all(25.0)),
+                padding: MaterialStateProperty.all(EdgeInsets.all(20.0)),
               ),
-              child: Row(
-                mainAxisSize: MainAxisSize
-                    .min, // Para evitar que o botão seja muito largo
-                children: [
-                  Icon(Icons.schedule), // Substitua pelo ícone que deseja
-                  SizedBox(width: 3), // Espaçamento entre o ícone e o texto
-                  Text('Bater Ponto de Entrada'),
-                ],
-              ),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          RegistroPontoPage(tipo: 'Saida', nif: widget.nif)),
-                );
-              },
-              style: ButtonStyle(
-                padding: MaterialStateProperty.all(EdgeInsets.all(25.0)),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize
-                    .min, // Para evitar que o botão seja muito largo
-                children: [
-                  Icon(
-                      Icons.keyboard_return), // Substitua pelo ícone que deseja
-                  SizedBox(width: 3), // Espaçamento entre o ícone e o texto
-                  Text('Bater Ponto de Saída'),
-                ],
-              ),
+              child: Text('Logout'),
             ),
           ],
         ),

@@ -114,7 +114,14 @@ class _RegistroPontoPageState extends State<RegistroPontoPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Registro de Ponto - ${widget.tipo}'),
+        title: Center(
+          child: Text(
+            "Registro de ponto - " + widget.tipo,
+            style: TextStyle(
+              fontWeight: FontWeight.w200,
+            ),
+          ),
+        ),
       ),
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
