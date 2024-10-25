@@ -72,22 +72,26 @@ class _UploadFotoScreenState extends State<UploadFotoScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Upload Foto de Perfil')),
-      body: Column(
-        children: [
-          _image == null
-              ? Text('Nenhuma imagem selecionada.')
-              : Image.file(_image!), // Exibe a imagem selecionada
-          ElevatedButton(
-            onPressed: _getImage,
-            child: Text('Selecionar Imagem'),
+      body: SingleChildScrollView(
+        child: Container(
+          child: Column(
+            children: [
+              _image == null
+                  ? Text('Nenhuma imagem selecionada.')
+                  : Image.file(_image!), // Exibe a imagem selecionada
+              ElevatedButton(
+                onPressed: _getImage,
+                child: Text('Selecionar Imagem'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  _uploadImage(context);
+                },
+                child: Text('Upload'),
+              ),
+            ],
           ),
-          ElevatedButton(
-            onPressed: () {
-              _uploadImage(context);
-            },
-            child: Text('Upload'),
-          ),
-        ],
+        ),
       ),
     );
   }
