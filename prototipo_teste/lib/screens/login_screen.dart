@@ -72,15 +72,39 @@ class _LoginScreenState extends State<LoginScreen> {
                   Funcionario? funcionarioData =
                       await _firestoreService.buscarFuncionarioPorNIF(nif);
 
-                  if (funcionarioData != null &&
-                      funcionarioData.senha == senha) {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) =>
-                            DashboardPage(nif: nif), // Passe o NIF aqui
-                      ),
-                    );
+                  if (funcionarioData != null) {
+                    if(funcionarioData.isAdmin == true && funcionarioData.senha == senha){
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => CadastroFuncionariosScreen(),
+                          ),
+                        );
+                    }
+                    bool senhaCorreta = await _firestoreService
+                        .verificarSenhaFuncionario(nif, senha);
+                        print(senhaCorreta);
+                    if (senhaCorreta) {
+                      if (funcionarioData.isAdmin == true) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => CadastroFuncionariosScreen(),
+                          ),
+                        );
+                      } else {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => PaginaInternaFuncionario(nif: nif,),
+                          ),
+                        );
+                      }
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Senha incorreta')),
+                      );
+                    }
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text('Senha incorreta')),
