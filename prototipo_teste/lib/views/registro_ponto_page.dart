@@ -80,6 +80,8 @@ class _RegistroPontoPageState extends State<RegistroPontoPage> {
     double distance = Geolocator.distanceBetween(_currentPosition.latitude,
         _currentPosition.longitude, specificLatitude, specificLongitude);
 
+    String distanciaFormatada = distance.toStringAsFixed(2);
+
     if (distance <= 100) {
       try {
         await _firestore.collection('registros_ponto').add({
@@ -87,7 +89,7 @@ class _RegistroPontoPageState extends State<RegistroPontoPage> {
           'tipo': widget.tipo,
           'latitude': _currentPosition.latitude,
           'longitude': _currentPosition.longitude,
-          'distancia': distance,
+          'distancia': distanciaFormatada,
           'timestamp': FieldValue.serverTimestamp(),
         });
         ScaffoldMessenger.of(context).showSnackBar(
@@ -138,8 +140,8 @@ class _RegistroPontoPageState extends State<RegistroPontoPage> {
                             point: LatLng(_currentPosition.latitude,
                                 _currentPosition.longitude),
                             builder: (ctx) => Container(
-                              child: Icon(Icons.location_on,
-                                  color: Colors.deepPurpleAccent, size: 40),
+                              child: Icon(Icons.location_history,
+                                  color: Colors.deepPurpleAccent, size: 80),
                             ),
                           ),
                           Marker(
