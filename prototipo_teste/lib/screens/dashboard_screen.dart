@@ -9,7 +9,8 @@ class PaginaInternaFuncionario extends StatefulWidget {
   PaginaInternaFuncionario({required this.nif});
 
   @override
-  _PaginaInternaFuncionarioState createState() => _PaginaInternaFuncionarioState();
+  _PaginaInternaFuncionarioState createState() =>
+      _PaginaInternaFuncionarioState();
 }
 
 class _PaginaInternaFuncionarioState extends State<PaginaInternaFuncionario> {
@@ -28,7 +29,8 @@ class _PaginaInternaFuncionarioState extends State<PaginaInternaFuncionario> {
       FirebaseStorage storage = FirebaseStorage.instance;
 
       // Caminho da imagem no Cloud Storage
-      String caminhoArquivo = 'fotos_perfil/${widget.nif}.jpg'; // Exemplo: '12345678.jpg'
+      String caminhoArquivo =
+          'fotos_perfil/${widget.nif}.jpg'; // Exemplo: '12345678.jpg'
       String url = await storage.ref(caminhoArquivo).getDownloadURL();
 
       // Atualiza o estado para exibir a foto
@@ -76,7 +78,8 @@ class _PaginaInternaFuncionarioState extends State<PaginaInternaFuncionario> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => RegistroPontoPage(tipo: 'entrada', nif: widget.nif,)),
+                      builder: (context) =>
+                          RegistroPontoPage(tipo: 'entrada', nif: widget.nif)),
                 );
               },
               child: Text('Bater Ponto de Entrada'),
@@ -87,7 +90,8 @@ class _PaginaInternaFuncionarioState extends State<PaginaInternaFuncionario> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => RegistroPontoPage(tipo: 'saida', nif: widget.nif,)),
+                      builder: (context) =>
+                          RegistroPontoPage(tipo: 'saida', nif: widget.nif)),
                 );
               },
               child: Text('Bater Ponto de Saída'),
