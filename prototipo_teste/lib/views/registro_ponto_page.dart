@@ -77,12 +77,8 @@ class _RegistroPontoPageState extends State<RegistroPontoPage> {
   }
 
   Future<void> _registrarPonto() async {
-    double distance = Geolocator.distanceBetween(
-      _currentPosition.latitude,
-      _currentPosition.longitude,
-      specificLatitude,
-      specificLongitude,
-    );
+    double distance = Geolocator.distanceBetween(_currentPosition.latitude,
+        _currentPosition.longitude, specificLatitude, specificLongitude);
 
     if (distance <= 100) {
       try {
@@ -91,6 +87,7 @@ class _RegistroPontoPageState extends State<RegistroPontoPage> {
           'tipo': widget.tipo,
           'latitude': _currentPosition.latitude,
           'longitude': _currentPosition.longitude,
+          'distancia': distance,
           'timestamp': FieldValue.serverTimestamp(),
         });
         ScaffoldMessenger.of(context).showSnackBar(
