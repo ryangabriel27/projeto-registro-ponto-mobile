@@ -1,4 +1,4 @@
-# Aplicativo para registro de ponto
+# <img src="./imagens/logo1.png" align="text-center">
 
 - ## Resumo:
   - ### O aplicativo permite ao funcionário registrar seu ponto de trabalho em seu dispositivo móvel, verificando a distância e localização que está em relação ao local de trabalho, também, é adicionado funcionalidades para verificação e segurança da identidade do funcionario, como uso da digital para registrar o ponto. Além disso, o app conta com uma interface simples atrativa e intuitiva com o usuário, permitindo que o mesmo personalize seu perfil com uma foto de perfil.
