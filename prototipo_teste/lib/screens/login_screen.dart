@@ -5,7 +5,6 @@ import 'package:prototipo_teste/screens/home_screen.dart';
 import 'package:prototipo_teste/services/firestore_service.dart';
 import 'package:prototipo_teste/screens/cadastro_senha_screen.dart';
 import 'package:prototipo_teste/screens/dashboard_screen.dart';
-import '../views/dashboard_page.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -23,7 +22,13 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Login')),
+      appBar: AppBar(title: Center(
+        child: Container(
+          width: 200,
+          height: 50,
+          child: Image.asset('assets/images/logo1.png'),
+        ),
+      )),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

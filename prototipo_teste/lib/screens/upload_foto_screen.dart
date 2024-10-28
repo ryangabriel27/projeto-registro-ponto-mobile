@@ -1,11 +1,10 @@
-import 'dart:io'; // Para manipulação de arquivos
+import 'dart:io'; 
 import 'package:flutter/material.dart';
-import 'package:firebase_storage/firebase_storage.dart'; // Para Cloud Storage
-import 'package:image_picker/image_picker.dart'; // Para selecionar a imagem
-import 'package:firebase_auth/firebase_auth.dart'; // Para autenticação
+import 'package:firebase_storage/firebase_storage.dart'; 
+import 'package:image_picker/image_picker.dart'; 
+import 'package:firebase_auth/firebase_auth.dart'; 
 import 'package:path/path.dart';
 import 'package:prototipo_teste/screens/dashboard_screen.dart';
-import 'package:prototipo_teste/views/dashboard_page.dart'; // Para manipular nomes de arquivos
 
 class UploadFotoScreen extends StatefulWidget {
   final String nif;
@@ -72,34 +71,43 @@ class _UploadFotoScreenState extends State<UploadFotoScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Upload Foto de Perfil')),
+      appBar: AppBar(
+          title: Center(
+              child: Text('Upload Foto de Perfil',
+                  style: TextStyle(
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.w200,
+                  )))),
       body: SingleChildScrollView(
         child: Container(
-          child: Column(
-            children: [
-              _image == null
-                  ? Text('Nenhuma imagem selecionada.')
-                  : Image.file(_image!), // Exibe a imagem selecionada
-              ElevatedButton(
-                onPressed: _getImage,
-                child: Text('Selecionar Imagem'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  _uploadImage(context);
-                },
-                child: Text('Upload'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                          builder: (_) => DashboardPage(nif: widget.nif)));
-                },
-                child: Text('Voltar ao login'),
-              ),
-            ],
+          child: Center(
+            child: Column(
+              children: [
+                _image == null
+                    ? Text('Nenhuma imagem selecionada.')
+                    : Image.file(_image!), // Exibe a imagem selecionada
+                ElevatedButton(
+                  onPressed: _getImage,
+                  child: Text('Selecionar Imagem'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    _uploadImage(context);
+                  },
+                  child: Text('Upload'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) =>
+                                PaginaInternaFuncionario(nif: widget.nif)));
+                  },
+                  child: Text('Voltar ao login'),
+                ),
+              ],
+            ),
           ),
         ),
       ),

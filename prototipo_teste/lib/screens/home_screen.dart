@@ -6,20 +6,14 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Registro de Ponto - Home'),
-      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [ 
-            Text(
-              'Bem-vindo ao Sistema de Registro de Ponto',
-              style: TextStyle(fontSize: 18),
-              textAlign: TextAlign.center,
-            ),
+          children: [
             Container(
-              child: Image.asset('assets/images/logo.png'),
+              width: 400,
+              height: 200,
+              child: Image.asset('assets/images/logo1.png'),
             ),
             SizedBox(height: 20),
             ElevatedButton(
@@ -30,7 +24,16 @@ class HomeScreen extends StatelessWidget {
                   MaterialPageRoute(builder: (context) => LoginScreen()),
                 );
               },
-              child: Text('Login'),
+              child: Text(
+                'Login',
+                style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white),
+              ),
+              style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all<Color>(
+                      Colors.deepPurpleAccent)), // Fundo roxo
             ),
             SizedBox(height: 10),
           ],

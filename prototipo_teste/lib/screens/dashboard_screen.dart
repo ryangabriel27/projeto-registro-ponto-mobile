@@ -49,11 +49,21 @@ class _PaginaInternaFuncionarioState extends State<PaginaInternaFuncionario> {
     return Scaffold(
       appBar: AppBar(
         title: Center(
-          child: Text(
-            "Registro de ponto",
-            style: TextStyle(
-              fontWeight: FontWeight.w200,
-            ),
+          child: Column(
+            children: [
+              Container(
+                width: 120,
+                height: 30,
+                child: Image.asset('assets/images/logo1.png'),
+              ),
+              Text(
+                "Registro de ponto",
+                style: TextStyle(
+                  fontSize: 15.0,
+                  fontWeight: FontWeight.w200,
+                ),
+              ),
+            ],
           ),
         ),
       ),
@@ -143,14 +153,20 @@ class _PaginaInternaFuncionarioState extends State<PaginaInternaFuncionario> {
                     );
                   },
                   style: ButtonStyle(
-                    padding: MaterialStateProperty.all(EdgeInsets.all(25.0)),
+                    padding: MaterialStateProperty.all(EdgeInsets.all(20.0)),
+                    backgroundColor: MaterialStateProperty.all<Color>(
+                        Colors.deepPurpleAccent),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(Icons.schedule),
                       SizedBox(width: 3),
-                      Text('Bater Ponto de Entrada'),
+                      Text('Bater Ponto de Entrada',
+                          style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white)),
                     ],
                   ),
                 ),
@@ -168,14 +184,20 @@ class _PaginaInternaFuncionarioState extends State<PaginaInternaFuncionario> {
                     );
                   },
                   style: ButtonStyle(
-                    padding: MaterialStateProperty.all(EdgeInsets.all(25.0)),
+                    padding: MaterialStateProperty.all(EdgeInsets.all(20.0)),
+                    backgroundColor: MaterialStateProperty.all<Color>(
+                        Colors.deepPurpleAccent),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(Icons.keyboard_return),
                       SizedBox(width: 3),
-                      Text('Bater Ponto de Saída'),
+                      Text('Bater Ponto de Saída',
+                          style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white)),
                     ],
                   ),
                 ),
