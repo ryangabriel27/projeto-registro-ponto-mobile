@@ -12,11 +12,14 @@ class HomeScreen extends StatelessWidget {
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
+          children: [ 
             Text(
               'Bem-vindo ao Sistema de Registro de Ponto',
               style: TextStyle(fontSize: 18),
               textAlign: TextAlign.center,
+            ),
+            Container(
+              child: Image.asset('assets/images/logo.png'),
             ),
             SizedBox(height: 20),
             ElevatedButton(
