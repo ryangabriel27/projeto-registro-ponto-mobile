@@ -293,11 +293,14 @@ class _RegistroPontoPageState extends State<RegistroPontoPage> {
                       SizedBox(height: 20.0),
                       ElevatedButton(
                         onPressed: _handleRegistroPonto,
-                        child: Text('Confirmar Registro de Ponto', style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12.0,
-                        ),),
+                        child: Text(
+                          'Confirmar Registro de Ponto',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12.0,
+                          ),
+                        ),
                         style: ButtonStyle(
                             backgroundColor: MaterialStateProperty.all<Color>(
                                 Colors.deepPurpleAccent)),

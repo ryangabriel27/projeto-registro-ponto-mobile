@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:prototipo_teste/models/Funcionario.dart';
@@ -20,10 +22,35 @@ class _PaginaInternaFuncionarioState extends State<PaginaInternaFuncionario> {
   String? _fotoPerfilUrl;
   String? nomeUsuario;
   FirestoreService _firestoreService = FirestoreService();
+  String _timeString = '';
+  Timer? _timer;
 
   @override
   void initState() {
     super.initState();
+    _timeString = _formatDateTime(DateTime.now()); // Inicializar o relógio
+    _timer =
+        Timer.periodic(Duration(seconds: 60), (Timer t) => _getTime()); // Atualiza a hora
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel(); // Cancela o relógio
+    super.dispose();
+  }
+
+  // Método para formatar a data
+  String _formatDateTime(DateTime dateTime) {
+    return "${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}";
+  }
+
+  // Pega a hora local de define o estado.
+  void _getTime() {
+    final DateTime now = DateTime.now();
+    final String formattedDateTime = _formatDateTime(now);
+    setState(() {
+      _timeString = formattedDateTime;
+    });
   }
 
   Future<String?> carregaNomeUsuario() async {
@@ -71,7 +98,6 @@ class _PaginaInternaFuncionarioState extends State<PaginaInternaFuncionario> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            // Primeira parte: Saudação, Foto de Perfil e Botão de Carregar Imagem
             Column(
               children: [
                 FutureBuilder<String?>(
@@ -82,6 +108,7 @@ class _PaginaInternaFuncionarioState extends State<PaginaInternaFuncionario> {
                     } else if (snapshot.hasError) {
                       return Text('Erro ao carregar o nome: ${snapshot.error}');
                     } else {
+                      // Texto com nome do usuário
                       return Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Center(
@@ -132,12 +159,35 @@ class _PaginaInternaFuncionarioState extends State<PaginaInternaFuncionario> {
                   },
                   child: Text('Colocar foto de perfil'),
                 ),
+                ElevatedButton(onPressed: (){
+                  // Chama a classe meusRegistro
+                }, child: Text('Ver meus registros'))
               ],
+            ),
+
+            SizedBox(
+              height: 20.0,
+            ),
+
+            // Relógio
+            Container(
+              padding: EdgeInsets.symmetric(vertical: 20),
+              child: Center(
+                child: Text(
+                  _timeString,
+                  style: TextStyle(
+                    fontSize: 48,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.deepPurpleAccent,
+                    fontFamily: 'monospace',
+                  ),
+                ),
+              ),
             ),
 
             SizedBox(height: 40),
 
-            // Segunda parte: Botões de "Ponto de Entrada" e "Ponto de Saída"
+            // Botões para Registro de ponto
             Column(
               children: [
                 ElevatedButton(
@@ -206,7 +256,7 @@ class _PaginaInternaFuncionarioState extends State<PaginaInternaFuncionario> {
 
             SizedBox(height: 40),
 
-            // Terceira parte: Novo botão adicional
+            // Botão de logout
             ElevatedButton(
               onPressed: () {
                 Navigator.pushReplacement(
