@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
+import 'package:prototipo_teste/models/RegistroPonto.dart';
+import 'package:prototipo_teste/screens/dashboard_screen.dart';
+import 'package:prototipo_teste/services/firestore_service.dart';
 
 class MeusRegistrosPage extends StatefulWidget {
   final String nif;
@@ -12,47 +15,19 @@ class MeusRegistrosPage extends StatefulWidget {
 }
 
 class _MeusRegistrosPageState extends State<MeusRegistrosPage> {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  DateTime _selectedDate = DateTime.now();
+  final FirestoreService _firestoreService = FirestoreService();
 
-  Future<List<QueryDocumentSnapshot>> _getRegistros(DateTime date) async {
-    // Cria data inicial (começo do dia) e final (fim do dia)
-    DateTime startDate = DateTime(date.year, date.month, date.day, 0, 0, 0);
-    DateTime endDate = DateTime(date.year, date.month, date.day, 23, 59, 59);
-
-    try {
-      QuerySnapshot querySnapshot = await _firestore
-          .collection('registros_ponto')
-          .where('nif', isEqualTo: widget.nif)
-          .where('timestamp', isGreaterThanOrEqualTo: startDate)
-          .where('timestamp', isLessThanOrEqualTo: endDate)
-          .orderBy('timestamp', descending: true)
-          .get();
-
-      return querySnapshot.docs;
-    } catch (e) {
-      print('Erro ao buscar registros: $e');
-      return [];
-    }
-  }
-
-  Widget _buildRegistroCard(QueryDocumentSnapshot doc) {
-    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-    Timestamp timestamp = data['timestamp'] as Timestamp;
-    DateTime dateTime = timestamp.toDate();
-    
+  Widget _buildRegistroCard(RegistroPonto registro) {
     return Card(
       elevation: 4,
       margin: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       child: ListTile(
         leading: Icon(
-          data['tipo'] == 'Entrada' ? Icons.login : Icons.logout,
-          color: data['tipo'] == 'Entrada' 
-              ? Colors.green 
-              : Colors.red,
+          registro.tipo == 'entrada' ? Icons.login : Icons.logout,
+          color: registro.tipo == 'entrada' ? Colors.green : Colors.red,
         ),
         title: Text(
-          'Ponto de ${data['tipo']}',
+          'Ponto de ${registro.tipo}',
           style: TextStyle(
             fontWeight: FontWeight.bold,
             color: Colors.deepPurple,
@@ -62,11 +37,11 @@ class _MeusRegistrosPageState extends State<MeusRegistrosPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Horário: ${DateFormat('HH:mm:ss').format(dateTime)}',
+              'Horário: ${DateFormat('HH:mm:ss').format(registro.timestamp!)}', // Alterar para timestamp real
               style: TextStyle(fontSize: 14),
             ),
             Text(
-              'Distância: ${data['distancia']}',
+              'Distância: ${registro.distancia}',
               style: TextStyle(fontSize: 12),
             ),
           ],
@@ -75,7 +50,7 @@ class _MeusRegistrosPageState extends State<MeusRegistrosPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              DateFormat('dd/MM/yyyy').format(dateTime),
+              DateFormat('dd/MM/yyyy').format(registro.timestamp!), // Alterar para timestamp real
               style: TextStyle(
                 fontSize: 12,
                 color: Colors.grey[600],
@@ -91,114 +66,67 @@ class _MeusRegistrosPageState extends State<MeusRegistrosPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => PaginaInternaFuncionario(nif: widget.nif),
+              ),
+            );
+          },
+          icon: Icon(Icons.arrow_back),
+        ),
         title: Text(
           'Meus Registros',
           style: TextStyle(fontWeight: FontWeight.w300),
         ),
         centerTitle: true,
       ),
-      body: Column(
-        children: [
-          // Calendar/Date Picker
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                IconButton(
-                  icon: Icon(Icons.arrow_back_ios),
-                  onPressed: () {
-                    setState(() {
-                      _selectedDate = _selectedDate.subtract(Duration(days: 1));
-                    });
-                  },
-                ),
-                TextButton(
-                  onPressed: () async {
-                    final DateTime? date = await showDatePicker(
-                      context: context,
-                      initialDate: _selectedDate,
-                      firstDate: DateTime(2000),
-                      lastDate: DateTime.now(),
-                    );
-                    if (date != null) {
-                      setState(() {
-                        _selectedDate = date;
-                      });
-                    }
-                  },
-                  child: Text(
-                    DateFormat('dd/MM/yyyy').format(_selectedDate),
+      body: FutureBuilder<List<RegistroPonto>>(
+        future: _firestoreService.getRegistrosByNif(widget.nif),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          }
+
+          if (snapshot.hasError) {
+            return Center(
+              child: Text('Erro ao carregar registros: ${snapshot.error}'),
+            );
+          }
+
+          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.event_busy,
+                    size: 64,
+                    color: Colors.grey,
+                  ),
+                  SizedBox(height: 16),
+                  Text(
+                    'Nenhum registro encontrado',
                     style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.deepPurple,
+                      fontSize: 16,
+                      color: Colors.grey[600],
                     ),
                   ),
-                ),
-                IconButton(
-                  icon: Icon(Icons.arrow_forward_ios),
-                  onPressed: () {
-                    final tomorrow = _selectedDate.add(Duration(days: 1));
-                    if (!tomorrow.isAfter(DateTime.now())) {
-                      setState(() {
-                        _selectedDate = tomorrow;
-                      });
-                    }
-                  },
-                ),
-              ],
-            ),
-          ),
-          
-          // Registros List
-          Expanded(
-            child: FutureBuilder<List<QueryDocumentSnapshot>>(
-              future: _getRegistros(_selectedDate),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
-                }
+                ],
+              ),
+            );
+          }
 
-                if (snapshot.hasError) {
-                  return Center(
-                    child: Text('Erro ao carregar registros: ${snapshot.error}'),
-                  );
-                }
-
-                if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.event_busy,
-                          size: 64,
-                          color: Colors.grey,
-                        ),
-                        SizedBox(height: 16),
-                        Text(
-                          'Nenhum registro encontrado para esta data',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                }
-
-                return ListView.builder(
-                  itemCount: snapshot.data!.length,
-                  itemBuilder: (context, index) {
-                    return _buildRegistroCard(snapshot.data![index]);
-                  },
-                );
-              },
-            ),
-          ),
-        ],
+          return ListView.builder(
+            itemCount: snapshot.data!.length,
+            itemBuilder: (context, index) {
+              final registro = snapshot.data![index];
+              return _buildRegistroCard(registro);
+            },
+          );
+        },
       ),
     );
   }
