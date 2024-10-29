@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:prototipo_teste/models/Funcionario.dart';
 import 'package:prototipo_teste/screens/home_screen.dart';
+import 'package:prototipo_teste/screens/meus_registros_screen.dart';
 import 'package:prototipo_teste/screens/upload_foto_screen.dart';
 import 'package:prototipo_teste/services/firestore_service.dart';
 import 'package:prototipo_teste/views/registro_ponto_page.dart';
@@ -161,6 +162,12 @@ class _PaginaInternaFuncionarioState extends State<PaginaInternaFuncionario> {
                 ),
                 ElevatedButton(onPressed: (){
                   // Chama a classe meusRegistro
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              MeusRegistrosPage(nif: widget.nif)),
+                    );
                 }, child: Text('Ver meus registros'))
               ],
             ),
@@ -196,7 +203,7 @@ class _PaginaInternaFuncionarioState extends State<PaginaInternaFuncionario> {
                       context,
                       MaterialPageRoute(
                         builder: (context) => RegistroPontoPage(
-                          tipo: 'Entrada',
+                          tipo: 'entrada',
                           nif: widget.nif,
                         ),
                       ),
@@ -227,7 +234,7 @@ class _PaginaInternaFuncionarioState extends State<PaginaInternaFuncionario> {
                       context,
                       MaterialPageRoute(
                         builder: (context) => RegistroPontoPage(
-                          tipo: 'Saida',
+                          tipo: 'saida',
                           nif: widget.nif,
                         ),
                       ),
