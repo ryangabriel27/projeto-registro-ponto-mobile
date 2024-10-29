@@ -11,12 +11,49 @@ class LoginScreen extends StatefulWidget {
   _LoginScreenState createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends State<LoginScreen>
+    with SingleTickerProviderStateMixin {
   final TextEditingController _nifController = TextEditingController();
   final TextEditingController _senhaController = TextEditingController();
   final FirestoreService _firestoreService = FirestoreService();
 
   bool _senhaFieldVisible = false;
+  late AnimationController _controller;
+  late Animation<double> _opacityAnimation;
+  late Animation<Alignment> _alignmentAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = AnimationController(
+      duration: const Duration(seconds: 2),
+      vsync: this,
+    )..repeat(reverse: true);
+
+    _opacityAnimation = Tween<double>(begin: 0.2, end: 0.4).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Curves.easeInOut,
+      ),
+    );
+
+    _alignmentAnimation = Tween<Alignment>(
+      begin: Alignment.topRight,
+      end: Alignment.bottomLeft,
+    ).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Curves.easeInOut,
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,127 +67,122 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
       ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            stops: [0.0, 0.99],
-            colors: [
-              Colors.transparent,
-              Colors.deepPurpleAccent.withOpacity(0.2),
-            ],
-          ),
-        ),
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: _nifController,
-              decoration: InputDecoration(
-                labelText: 'NIF',
-                labelStyle: TextStyle(
-                    color: Colors.white
-                        .withOpacity(0.6)), // Label com 60% de opacidade
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                      color: Colors.white
-                          .withOpacity(0)), // Borda com 20% de opacidade
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                      color: Colors.deepPurpleAccent
-                          .withOpacity(0.4)), // Borda ao focar
-                ),
+      body: AnimatedBuilder(
+        animation: _controller,
+        builder: (context, child) {
+          return Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: _alignmentAnimation.value,
+                end: Alignment.bottomLeft,
+                colors: [
+                  Colors.transparent,
+                  Colors.deepPurpleAccent.withOpacity(_opacityAnimation.value),
+                ],
               ),
             ),
-            if (_senhaFieldVisible)
-              TextField(
-                controller: _senhaController,
-                decoration: InputDecoration(
-                  labelText: 'Senha',
-                  labelStyle: TextStyle(
-                      color: Colors.white
-                          .withOpacity(0.6)), // Label com 60% de opacidade
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Colors.white
-                            .withOpacity(0)), // Borda com 0% de opacidade
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Colors.deepPurpleAccent
-                            .withOpacity(0.4)), // Borda ao focar
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                TextField(
+                  controller: _nifController,
+                  decoration: InputDecoration(
+                    labelText: 'NIF',
+                    labelStyle: TextStyle(color: Colors.white.withOpacity(0.6)),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide:
+                          BorderSide(color: Colors.white.withOpacity(0)),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                          color: Colors.deepPurpleAccent.withOpacity(0.4)),
+                    ),
                   ),
                 ),
-                obscureText: true,
-              ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor:
-                    const Color.fromARGB(36, 0, 0, 0), // Cor de fundo do botão
-                foregroundColor:
-                    Colors.deepPurpleAccent, // Cor do texto do botão
-              ),
-              onPressed: () async {
-                String nif = _nifController.text;
+                if (_senhaFieldVisible)
+                  TextField(
+                    controller: _senhaController,
+                    decoration: InputDecoration(
+                      labelText: 'Senha',
+                      labelStyle:
+                          TextStyle(color: Colors.white.withOpacity(0.6)),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide:
+                            BorderSide(color: Colors.white.withOpacity(0)),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Colors.deepPurpleAccent.withOpacity(0.4)),
+                      ),
+                    ),
+                    obscureText: true,
+                  ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromARGB(36, 0, 0, 0),
+                    foregroundColor: Colors.deepPurpleAccent,
+                  ),
+                  onPressed: () async {
+                    String nif = _nifController.text;
 
-                if (!_senhaFieldVisible) {
-                  Funcionario? funcionarioData =
-                      await _firestoreService.buscarFuncionarioPorNIF(nif);
+                    if (!_senhaFieldVisible) {
+                      Funcionario? funcionarioData =
+                          await _firestoreService.buscarFuncionarioPorNIF(nif);
 
-                  if (funcionarioData != null) {
-                    if (funcionarioData.senha == null) {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => CadastroSenhaScreen(nif: nif),
-                        ),
-                      );
-                    } else {
-                      setState(() {
-                        _senhaFieldVisible = true;
-                      });
-                    }
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Funcionário não encontrado')),
-                    );
-                  }
-                } else {
-                  String senha = _senhaController.text;
-                  Funcionario? funcionarioData =
-                      await _firestoreService.buscarFuncionarioPorNIF(nif);
-
-                  if (funcionarioData != null) {
-                    if (funcionarioData.isAdmin == true &&
-                        funcionarioData.senha == senha) {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => CadastroFuncionariosScreen(),
-                        ),
-                      );
-                    } else {
-                      bool senhaCorreta = await _firestoreService
-                          .verificarSenhaFuncionario(nif, senha);
-                      if (senhaCorreta) {
-                        if (funcionarioData.isAdmin == true) {
+                      if (funcionarioData != null) {
+                        if (funcionarioData.senha == null) {
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => CadastroFuncionariosScreen(),
-                            ),
+                                builder: (_) => CadastroSenhaScreen(nif: nif)),
                           );
                         } else {
+                          setState(() {
+                            _senhaFieldVisible = true;
+                          });
+                        }
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Funcionário não encontrado')),
+                        );
+                      }
+                    } else {
+                      String senha = _senhaController.text;
+                      Funcionario? funcionarioData =
+                          await _firestoreService.buscarFuncionarioPorNIF(nif);
+
+                      if (funcionarioData != null) {
+                        if (funcionarioData.isAdmin == true &&
+                            funcionarioData.senha == senha) {
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => PaginaInternaFuncionario(
-                                nif: nif,
-                              ),
-                            ),
+                                builder: (_) => CadastroFuncionariosScreen()),
                           );
+                        } else {
+                          bool senhaCorreta = await _firestoreService
+                              .verificarSenhaFuncionario(nif, senha);
+                          if (senhaCorreta) {
+                            if (funcionarioData.isAdmin == true) {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) =>
+                                        CadastroFuncionariosScreen()),
+                              );
+                            } else {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) =>
+                                        PaginaInternaFuncionario(nif: nif)),
+                              );
+                            }
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Senha incorreta')),
+                            );
+                          }
                         }
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -158,30 +190,26 @@ class _LoginScreenState extends State<LoginScreen> {
                         );
                       }
                     }
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Senha incorreta')),
+                  },
+                  child: Text(_senhaFieldVisible ? 'Login' : 'Continuar'),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromARGB(15, 0, 0, 0),
+                    foregroundColor: Colors.deepPurpleAccent,
+                  ),
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (_) => HomeScreen()),
                     );
-                  }
-                }
-              },
-              child: Text(_senhaFieldVisible ? 'Login' : 'Continuar'),
+                  },
+                  child: Text("Voltar ao ínicio"),
+                ),
+              ],
             ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor:
-                    const Color.fromARGB(15, 0, 0, 0), // Cor de fundo do botão
-                foregroundColor:
-                    Colors.deepPurpleAccent, // Cor do texto do botão
-              ),
-              onPressed: () {
-                Navigator.pushReplacement(
-                    context, MaterialPageRoute(builder: (_) => HomeScreen()));
-              },
-              child: Text("Voltar ao ínicio"),
-            ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
