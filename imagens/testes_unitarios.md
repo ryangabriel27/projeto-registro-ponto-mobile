@@ -1,4 +1,5 @@
 # Documento de testes unitários para o aplicativo GeoPonto
+- #### [📝Documentação técnica](../README.md)
 - ### Os testes estão localizados no diretório `test`
     - ### Teste conexão com Firebase:
     <img src="testes1.png">
