@@ -70,6 +70,13 @@ class _CadastroFuncionariosScreenState
                 String nome = _nomeController.text;
                 String cpf = _cpfController.text;
 
+                if (nif.isEmpty || nome.isEmpty || cpf.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Todos os campos são obrigatórios')),
+                  );
+                  return;
+                }
+
                 // Criação do objeto Funcionario
                 Funcionario funcionario = Funcionario(
                   nif: nif,
