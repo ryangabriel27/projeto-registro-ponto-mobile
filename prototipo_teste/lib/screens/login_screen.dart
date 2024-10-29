@@ -16,45 +16,91 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _senhaController = TextEditingController();
   final FirestoreService _firestoreService = FirestoreService();
 
-  bool _senhaFieldVisible =
-      false; // Para controlar a exibição do campo de senha
+  bool _senhaFieldVisible = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Center(
-        child: Container(
-          width: 200,
-          height: 50,
-          child: Image.asset('assets/images/logo1.png'),
+      appBar: AppBar(
+        title: Center(
+          child: Container(
+            width: 200,
+            height: 50,
+            child: Image.asset('assets/images/logo1.png'),
+          ),
         ),
-      )),
-      body: Padding(
+      ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            stops: [0.0, 0.99],
+            colors: [
+              Colors.transparent,
+              Colors.deepPurpleAccent.withOpacity(0.2),
+            ],
+          ),
+        ),
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             TextField(
               controller: _nifController,
-              decoration: InputDecoration(labelText: 'NIF'),
+              decoration: InputDecoration(
+                labelText: 'NIF',
+                labelStyle: TextStyle(
+                    color: Colors.white
+                        .withOpacity(0.6)), // Label com 60% de opacidade
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                      color: Colors.white
+                          .withOpacity(0)), // Borda com 20% de opacidade
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                      color: Colors.deepPurpleAccent
+                          .withOpacity(0.4)), // Borda ao focar
+                ),
+              ),
             ),
-            if (_senhaFieldVisible) // Mostra o campo de senha apenas se for necessário
+            if (_senhaFieldVisible)
               TextField(
                 controller: _senhaController,
-                decoration: InputDecoration(labelText: 'Senha'),
+                decoration: InputDecoration(
+                  labelText: 'Senha',
+                  labelStyle: TextStyle(
+                      color: Colors.white
+                          .withOpacity(0.6)), // Label com 60% de opacidade
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                        color: Colors.white
+                            .withOpacity(0)), // Borda com 0% de opacidade
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                        color: Colors.deepPurpleAccent
+                            .withOpacity(0.4)), // Borda ao focar
+                  ),
+                ),
                 obscureText: true,
               ),
             ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor:
+                    const Color.fromARGB(36, 0, 0, 0), // Cor de fundo do botão
+                foregroundColor:
+                    Colors.deepPurpleAccent, // Cor do texto do botão
+              ),
               onPressed: () async {
                 String nif = _nifController.text;
 
                 if (!_senhaFieldVisible) {
-                  // Primeiro passo: verificar se o funcionário existe e se tem senha
                   Funcionario? funcionarioData =
                       await _firestoreService.buscarFuncionarioPorNIF(nif);
 
                   if (funcionarioData != null) {
                     if (funcionarioData.senha == null) {
-                      // Se a senha não estiver cadastrada, redireciona para cadastro de senha
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
@@ -62,7 +108,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       );
                     } else {
-                      // Se a senha estiver cadastrada, exibe o campo de senha
                       setState(() {
                         _senhaFieldVisible = true;
                       });
@@ -73,7 +118,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     );
                   }
                 } else {
-                  // Segundo passo: verificar a senha
                   String senha = _senhaController.text;
                   Funcionario? funcionarioData =
                       await _firestoreService.buscarFuncionarioPorNIF(nif);
@@ -90,7 +134,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     } else {
                       bool senhaCorreta = await _firestoreService
                           .verificarSenhaFuncionario(nif, senha);
-                      print(senhaCorreta);
                       if (senhaCorreta) {
                         if (funcionarioData.isAdmin == true) {
                           Navigator.pushReplacement(
@@ -125,11 +168,18 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Text(_senhaFieldVisible ? 'Login' : 'Continuar'),
             ),
             ElevatedButton(
-                onPressed: () {
-                  Navigator.pushReplacement(
-                      context, MaterialPageRoute(builder: (_) => HomeScreen()));
-                },
-                child: Text("Voltar ao ínicio")),
+              style: ElevatedButton.styleFrom(
+                backgroundColor:
+                    const Color.fromARGB(15, 0, 0, 0), // Cor de fundo do botão
+                foregroundColor:
+                    Colors.deepPurpleAccent, // Cor do texto do botão
+              ),
+              onPressed: () {
+                Navigator.pushReplacement(
+                    context, MaterialPageRoute(builder: (_) => HomeScreen()));
+              },
+              child: Text("Voltar ao ínicio"),
+            ),
           ],
         ),
       ),
