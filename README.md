@@ -69,5 +69,3 @@
     
     Funcionario "1" -- "0..*" RegistroPonto : registra
   ```
-- # 1. Manual para instalação da aplicação
-- ##
