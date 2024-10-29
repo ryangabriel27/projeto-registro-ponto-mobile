@@ -1,10 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class RegistroPonto {
   final String nif;
   final String tipo;
   final double latitude;
   final double longitude;
   final String distancia;
-  final String nome; // Permite que a senha seja nula
+  final String nome;
+  final DateTime? timestamp;
 
   RegistroPonto({
     required this.nif,
@@ -13,16 +16,18 @@ class RegistroPonto {
     required this.longitude,
     required this.distancia,
     required this.nome,
+    this.timestamp,
   });
   // Método para converter dados do Firestore para um objeto RegistroPonto
   factory RegistroPonto.fromMap(Map<String, dynamic> data) {
     return RegistroPonto(
       nif: data['nif'] ?? '',
-      tipo: data['tipo'] ?? '',
-      latitude:  data['latitude'] ?? '',
-      longitude:  data['longitude'] ?? '',
-      distancia: data['distancia'] ?? '',
-      nome: data['nome'],
+      tipo: data['tipo'] ?? 'Desconhecido',
+      latitude: (data['latitude'] ?? 0).toDouble(),
+      longitude: (data['longitude'] ?? 0).toDouble(),
+      distancia: data['distancia']?.toString() ?? '0',
+      nome: data['nome'] ?? 'Nome desconhecido',
+      timestamp: (data['timestamp'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
   }
 

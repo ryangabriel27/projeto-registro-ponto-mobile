@@ -102,6 +102,8 @@ class FirestoreService {
       // Aqui você deve configurar o que deseja armazenar no Firestore
       await _firestore.collection('registros_ponto').add({
         'tipo': registro.tipo,
+        'nif': registro.nif,
+        'nome': registro.nome,
         'latitude': registro.latitude,
         'longitude': registro.longitude,
         'distancia': registro.distancia,
@@ -111,6 +113,23 @@ class FirestoreService {
     } catch (e) {
       print("Erro ao registrar ponto: $e");
       throw e;
+    }
+  }
+
+  Future<List<RegistroPonto>> getRegistrosByNif(String nif) async {
+    try {
+      QuerySnapshot querySnapshot = await _firestore
+          .collection('registros_ponto')
+          .where('nif', isEqualTo: nif)
+          .orderBy('timestamp', descending: true)
+          .get();
+
+      return querySnapshot.docs.map((DocumentSnapshot doc) {
+        return RegistroPonto.fromMap(doc.data() as Map<String, dynamic>);
+      }).toList();
+    } catch (e) {
+      print('Erro ao buscar registros: $e');
+      return [];
     }
   }
 }
