@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:prototipo_teste/models/Funcionario.dart';
 import 'package:prototipo_teste/screens/home_screen.dart';
 import 'package:prototipo_teste/screens/meus_registros_screen.dart';
@@ -30,8 +31,8 @@ class _PaginaInternaFuncionarioState extends State<PaginaInternaFuncionario> {
   void initState() {
     super.initState();
     _timeString = _formatDateTime(DateTime.now()); // Inicializar o relógio
-    _timer =
-        Timer.periodic(Duration(seconds: 60), (Timer t) => _getTime()); // Atualiza a hora
+    _timer = Timer.periodic(
+        Duration(seconds: 60), (Timer t) => _getTime()); // Atualiza a hora
   }
 
   @override
@@ -69,6 +70,45 @@ class _PaginaInternaFuncionarioState extends State<PaginaInternaFuncionario> {
     } catch (e) {
       print('Erro ao carregar a foto de perfil: $e');
       return null;
+    }
+  }
+
+  Future<bool> _verificarLocalizacaoAtiva() async {
+    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      await Geolocator.openLocationSettings();
+      return false;
+    }
+
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.deniedForever) {
+        return false;
+      }
+      if (permission == LocationPermission.denied) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  void _navegarParaRegistroPonto(String tipo) async {
+    bool localizacaoAtiva = await _verificarLocalizacaoAtiva();
+    if (localizacaoAtiva) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => RegistroPontoPage(
+            tipo: tipo,
+            nif: widget.nif,
+          ),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Ative a localização para continuar")),
+      );
     }
   }
 
@@ -160,15 +200,17 @@ class _PaginaInternaFuncionarioState extends State<PaginaInternaFuncionario> {
                   },
                   child: Text('Colocar foto de perfil'),
                 ),
-                ElevatedButton(onPressed: (){
-                  // Chama a classe meusRegistro
-                  Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              MeusRegistrosPage(nif: widget.nif)),
-                    );
-                }, child: Text('Ver meus registros'))
+                ElevatedButton(
+                    onPressed: () {
+                      // Chama a classe meusRegistro
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                MeusRegistrosPage(nif: widget.nif)),
+                      );
+                    },
+                    child: Text('Ver meus registros'))
               ],
             ),
 
@@ -199,15 +241,7 @@ class _PaginaInternaFuncionarioState extends State<PaginaInternaFuncionario> {
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => RegistroPontoPage(
-                          tipo: 'entrada',
-                          nif: widget.nif,
-                        ),
-                      ),
-                    );
+                    _navegarParaRegistroPonto('entrada');
                   },
                   style: ButtonStyle(
                     padding: MaterialStateProperty.all(EdgeInsets.all(20.0)),
@@ -230,15 +264,7 @@ class _PaginaInternaFuncionarioState extends State<PaginaInternaFuncionario> {
                 SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => RegistroPontoPage(
-                          tipo: 'saida',
-                          nif: widget.nif,
-                        ),
-                      ),
-                    );
+                    _navegarParaRegistroPonto('saida');
                   },
                   style: ButtonStyle(
                     padding: MaterialStateProperty.all(EdgeInsets.all(20.0)),

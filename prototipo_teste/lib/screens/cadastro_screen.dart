@@ -14,8 +14,7 @@ class _CadastroFuncionariosScreenState
   final TextEditingController _nifController = TextEditingController();
   final TextEditingController _nomeController = TextEditingController();
   final TextEditingController _cpfController = TextEditingController();
-  final FirestoreService _firestoreService =
-      FirestoreService(); // Instância do FirestoreService
+  final FirestoreService _firestoreService = FirestoreService();
 
   @override
   Widget build(BuildContext context) {
@@ -28,27 +27,11 @@ class _CadastroFuncionariosScreenState
             Container(
               child: ElevatedButton(
                   onPressed: () {
-                    showDialog(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                              title: Text("Registro Ponto"),
-                              content: Text("Saindo..."),
-                              actions: [
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.pop(
-                                        context); // Fecha o AlertDialog
-                                  },
-                                  child: Text('OK'),
-                                ),
-                              ],
-                            ));
                     Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => HomeScreen(),
-                      ),
-                    );
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => HomeScreen(),
+                        ));
                   },
                   child: Text("Fazer Logout")),
             ),
@@ -66,10 +49,11 @@ class _CadastroFuncionariosScreenState
             ),
             ElevatedButton(
               onPressed: () async {
-                String nif = _nifController.text;
-                String nome = _nomeController.text;
-                String cpf = _cpfController.text;
+                String nif = _nifController.text.trim();
+                String nome = _nomeController.text.trim();
+                String cpf = _cpfController.text.trim();
 
+                // Verificação de campos vazios
                 if (nif.isEmpty || nome.isEmpty || cpf.isEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Todos os campos são obrigatórios')),
@@ -77,18 +61,26 @@ class _CadastroFuncionariosScreenState
                   return;
                 }
 
-                // Criação do objeto Funcionario
+                // Verifica se o NIF já existe
+                Funcionario? funcionarioExistente =
+                    await _firestoreService.buscarFuncionarioPorNIF(nif);
+
+                if (funcionarioExistente != null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('NIF já cadastrado')),
+                  );
+                  return;
+                }
+
                 Funcionario funcionario = Funcionario(
                   nif: nif,
                   nome: nome,
-                  cpf:
-                      cpf, // Você pode adicionar um campo para o CPF, se necessário
+                  cpf: cpf,
                   senha: null,
-                  isAdmin: false, // Funcionário comum
+                  isAdmin: false,
                 );
 
                 try {
-                  // Cadastro do funcionário usando o FirestoreService
                   await _firestoreService.cadastrarFuncionario(funcionario);
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                       content: Text('Funcionário cadastrado com sucesso')));

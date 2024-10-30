@@ -111,7 +111,7 @@ class _RegistroPontoPageState extends State<RegistroPontoPage> {
   // Método para autenticação biométrica do colaborador
   Future<bool> _authenticate() async {
     try {
-      // First check if biometrics are available
+      // Verifica se há funcionalidade de biometria no telefone
       bool canCheckBiometrics = await auth.canCheckBiometrics;
       List<BiometricType> availableBiometrics =
           await auth.getAvailableBiometrics();
@@ -123,14 +123,13 @@ class _RegistroPontoPageState extends State<RegistroPontoPage> {
         return false;
       }
 
-      // Print available biometrics for debugging
       print('Available biometrics: $availableBiometrics');
 
       bool authenticated = await auth.authenticate(
         localizedReason: 'Por favor, autentique-se para registrar o ponto',
         options: const AuthenticationOptions(
           stickyAuth: true,
-          biometricOnly: true, // Only allow biometric authentication
+          biometricOnly: true, // Permite a biometria
           useErrorDialogs: true,
         ),
       );
