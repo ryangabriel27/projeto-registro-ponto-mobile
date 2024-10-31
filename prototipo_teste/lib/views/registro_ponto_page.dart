@@ -189,7 +189,7 @@ class _RegistroPontoPageState extends State<RegistroPontoPage> {
             latitude: _currentPosition.latitude,
             longitude: _currentPosition.longitude,
             distancia: distanciaFormatada,
-            nome: "");
+            );
 
         await _firestore.registrarPonto(newRegistro);
         ScaffoldMessenger.of(context).showSnackBar(

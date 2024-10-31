@@ -6,7 +6,6 @@ class RegistroPonto {
   final double latitude;
   final double longitude;
   final String distancia;
-  final String nome;
   final DateTime? timestamp;
 
   RegistroPonto({
@@ -15,7 +14,6 @@ class RegistroPonto {
     required this.latitude,
     required this.longitude,
     required this.distancia,
-    required this.nome,
     this.timestamp,
   });
   // Método para converter dados do Firestore para um objeto RegistroPonto
@@ -26,7 +24,6 @@ class RegistroPonto {
       latitude: (data['latitude'] ?? 0).toDouble(),
       longitude: (data['longitude'] ?? 0).toDouble(),
       distancia: data['distancia']?.toString() ?? '0',
-      nome: data['nome'] ?? 'Nome desconhecido',
       timestamp: (data['timestamp'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
   }
@@ -39,7 +36,6 @@ class RegistroPonto {
       'latitude': latitude,
       'longitude': longitude,
       'distancia': distancia,
-      'nome': nome,
     };
   }
 }

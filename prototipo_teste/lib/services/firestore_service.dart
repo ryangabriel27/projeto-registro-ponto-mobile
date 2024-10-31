@@ -103,7 +103,6 @@ class FirestoreService {
       await _firestore.collection('registros_ponto').add({
         'tipo': registro.tipo,
         'nif': registro.nif,
-        'nome': registro.nome,
         'latitude': registro.latitude,
         'longitude': registro.longitude,
         'distancia': registro.distancia,
